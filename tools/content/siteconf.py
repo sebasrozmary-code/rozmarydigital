@@ -17,8 +17,8 @@ BIZ = {
     "postal": "2440",
     "city": "Geel",
     "email": "info@rozmarydigital.be",
-    "phone": None,               # bv. "+32 470 12 34 56"
-    "whatsapp": None,            # internationaal zonder +, bv. "32470123456"
+    "phone": "+32 456 92 02 61",
+    "whatsapp": "32456920261",   # internationaal zonder +
     "instagram": "https://www.instagram.com/rozmarydigital/",
 }
 WA_PLACEHOLDER = "32000000000"   # enkel voor de preview; check.py weigert dit in productie
