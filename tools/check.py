@@ -60,7 +60,10 @@ def main():
         is_frag = preview and rel == "index.html"
         if p.h1 != 1: errors.append(f"{rel}: {p.h1} × h1")
         if "[[" in src: errors.append(f"{rel}: niet-ingevulde [[sleutel]]")
-        if not is_frag:
+        if not is_frag:  # wettelijke vermeldingen (WER boek XII) in de footer van elke pagina
+            for k in ("legal_name", "street", "kbo"):
+                if C.BIZ[k] and C.BIZ[k] not in src:
+                    errors.append(f"{rel}: {k} ontbreekt op de pagina")
             if not (10 <= len(p.title) <= 60): errors.append(f"{rel}: title {len(p.title)} tekens: {p.title}")
             if not noindex:
                 if p.desc is None or not (110 <= len(p.desc) <= 160): errors.append(f"{rel}: description {len(p.desc or '')} tekens")

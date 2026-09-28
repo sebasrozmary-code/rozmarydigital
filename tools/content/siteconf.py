@@ -7,15 +7,18 @@ per taal (NL €1.495 · FR 1 495 € · EN €1,495).
 
 DOMAIN = "https://www.rozmarydigital.be"
 
-# Vul de ontbrekende gegevens in vóór livegang (check.py waarschuwt zolang iets op None staat).
+# Wettelijk verplicht op de site (WER boek XII): naam, geografisch adres, ondernemings- en btw-nummer.
+# Bron: KBO Public Search (28-09-2026) — natuurlijk persoon, actief sinds 27-01-2025, btw-plichtig sinds
+# 01-02-2025; vestigingseenheid 2.369.448.395 op Pas 151, 2440 Geel sinds 27-03-2026.
 BIZ = {
     "name": "Rozmary Digital",
     "owner": "Sebastiaan",
-    "legal_name": None,          # bv. "Sebastiaan Achternaam" (eenmanszaak) — verplicht op de site
-    "kbo": None,                 # bv. "BE 0123.456.789" — verplicht op de site
-    "street": None,              # geografisch adres — verplicht op de site (WER boek XII)
+    "legal_name": "Sebastiaan Ganbaatar",   # eenmanszaak; Rozmary Digital is de handelsnaam
+    "kbo": "BE 1019.580.163",               # ondernemingsnummer = btw-nummer
+    "street": "Pas 151",
     "postal": "2440",
     "city": "Geel",
+    "region": "Antwerpen",                  # provincie (structured data)
     "email": "info@rozmarydigital.be",
     "phone": "+32 456 92 02 61",
     "whatsapp": "32456920261",   # internationaal zonder +
@@ -36,10 +39,13 @@ PRICES = {
     "peppol": 149, "logo": 249, "brand": 595, "web_start": 995, "starter": 1495,
     "starter_m": 99, "web_grow": 2495, "shop": 2995, "care": 29, "plan_local": 249,
     "plan_plus": 595, "ads_m": 199, "ads_setup": 249, "bot": 495, "bot_m": 39,
-    "social_m": 349, "photo": 395, "crm": 395, "pos": 295, "software": 1500,
+    "social_m": 349, "photo": 395, "crm": 395, "software": 1500,
     "late_discount": 100,
+    # RozmaryPOS (SaaS, zie RozmaryPOS-document): per maand, 36 maanden via domiciliëring
+    "pos_m": 175, "pos_web_m": 125, "pos_setup_min": 250, "pos_setup_max": 500,
 }
 PRICES["starter_loose"] = PRICES["brand"] + PRICES["web_start"] + PRICES["gbp"] + PRICES["cards"]
+PRICES["pos_shop_m"] = PRICES["pos_m"] + PRICES["pos_web_m"]   # kassa + webshopmodule = 300
 
 # Diensten in vaste volgorde (menu, homepage, footer).
 SERVICE_ORDER = ["website", "starter", "brand", "cards", "google", "shop",

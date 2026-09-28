@@ -12,11 +12,14 @@ Website van Rozmary Digital in NL (root), FR (`/fr/`) en EN (`/en/`): homepage, 
 - **Preview met relatieve links:** `python3 tools/build.py --preview /pad/naar/map`.
 - Huisstijl: `assets/css/site.css` (zwart #0A0D06, blauw #11B4FF, wit; Archivo + Figtree, zelf gehost). Logo als vector in `tools/logo_paths.json` en `assets/img/logo-mark*.svg`.
 
-## Vóór livegang invullen (`tools/content/siteconf.py` → `BIZ`)
-- `legal_name` (naam eenmanszaak), `kbo` (ondernemingsnummer), `street` (adres) — wettelijk verplicht op de site
-- `whatsapp` (bv. `32470123456`) en `phone`
+## Bedrijfsgegevens (`tools/content/siteconf.py` → `BIZ`)
+Ingevuld volgens de KBO (28-09-2026): Sebastiaan Ganbaatar (eenmanszaak), KBO/btw BE 1019.580.163,
+vestiging Pas 151, 2440 Geel. Staan in de footer, op de contactpagina, in het privacybeleid en in de JSON-LD.
+Verhuist de zaak of wijzigt het nummer: enkel `BIZ` aanpassen, bouwen, controleren.
+
+## Nog vóór livegang
 - Toestemming van Shiny Cleaning en Thunder Racing voor de cases (`/realisaties/`)
-- In `api/aanvraag.php`: `$TO` en `$FROM` (bestaand mailadres op het domein)
+- In `api/aanvraag.php`: `$FROM` moet een bestaand mailadres op het domein zijn (Hostinger → E-mails)
 
 ## Deploy (zelfde werkwijze als Shiny Cleaning)
 1. Repo publiceren: GitHub Desktop → Add local repository → deze map → Publish (private mag).

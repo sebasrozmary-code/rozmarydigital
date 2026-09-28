@@ -32,6 +32,12 @@ def money(lang, n):
     return "€" + f"{n:,}".replace(",", ".")
 
 
+def address_line():
+    """'Pas 151, 2440 Geel' (of enkel postcode + gemeente zolang de straat ontbreekt)."""
+    place = f'{C.BIZ["postal"]} {C.BIZ["city"]}'
+    return f'{C.BIZ["street"]}, {place}' if C.BIZ["street"] else place
+
+
 def fill(lang, s):
     """[[sleutel]] -> prijs of bedrijfsgegeven."""
     def rep(m):
@@ -40,6 +46,10 @@ def fill(lang, s):
             return C.BIZ["legal_name"] or C.BIZ["name"]
         if k == "email":
             return C.BIZ["email"]
+        if k == "address":
+            return address_line()
+        if k == "kbo":
+            return C.BIZ["kbo"] or CONTENT[lang].UI["kbo_missing"]
         if k in C.PRICES:
             return money(lang, C.PRICES[k])
         raise KeyError(f"onbekende sleutel [[{k}]]")
@@ -189,6 +199,8 @@ def footer(ctx, alts):
     areas = ", ".join(C.AREAS)
     kbo = f'{esc(ui["kbo"])} {esc(C.BIZ["kbo"])}' if C.BIZ["kbo"] else esc(ui["kbo_missing"])
     legal = esc(C.BIZ["legal_name"]) + " · " if C.BIZ["legal_name"] else ""
+    if C.BIZ["street"]:
+        legal += esc(address_line()) + " · "
     phone = f'<li><a href="tel:{esc(C.BIZ["phone"].replace(" ", ""))}">{esc(C.BIZ["phone"])}</a></li>' if C.BIZ["phone"] else ""
     return f'''<footer class="site-footer">
   <div class="wrap">
@@ -340,7 +352,7 @@ def org_ld(lang):
         "url": C.DOMAIN + "/", "logo": C.DOMAIN + "/assets/img/logo-512.png", "image": C.DOMAIN + "/assets/img/og-nl.png",
         "email": C.BIZ["email"], "description": fill(lang, CONTENT[lang].PAGES["home"]["desc"]),
         "sameAs": [C.BIZ["instagram"]], "priceRange": "€€",
-        "address": {"@type": "PostalAddress", "addressLocality": C.BIZ["city"], "addressRegion": "Antwerpen", "addressCountry": "BE"},
+        "address": {"@type": "PostalAddress", "addressLocality": C.BIZ["city"], "addressRegion": C.BIZ["region"], "addressCountry": "BE"},
         "areaServed": [{"@type": "City", "name": a} for a in C.AREAS] + [{"@type": "Country", "name": "België"}],
         "knowsLanguage": ["nl", "fr", "en"],
     }
@@ -349,8 +361,10 @@ def org_ld(lang):
         d["address"]["postalCode"] = C.BIZ["postal"]
     if C.BIZ["phone"]:
         d["telephone"] = C.BIZ["phone"]
+    if C.BIZ["legal_name"]:
+        d["legalName"] = C.BIZ["legal_name"]
     if C.BIZ["kbo"]:
-        d["vatID"] = C.BIZ["kbo"]
+        d["vatID"] = re.sub(r"[^A-Z0-9]", "", C.BIZ["kbo"])   # BE1019580163
     return d
 
 
@@ -644,6 +658,10 @@ def build_about(ctx):
 def build_contact(ctx):
     L, ui, P = ctx.lang, ctx.ui, CONTENT[ctx.lang].PAGES["contact"]
     wa_disp = C.BIZ["phone"] or "WhatsApp"
+    company = ""
+    if C.BIZ["legal_name"] and C.BIZ["kbo"]:
+        company = (f'\n    <li><h3>{icon("cards")}{T(L, P["company_h"])}</h3><p>{T(L, P["company_p"])}</p>'
+                   f'<p>{esc(address_line())}<br>{esc(ui["kbo"])} {esc(C.BIZ["kbo"])}</p></li>')
     main = f'''{page_hero(ctx, simple_trail(ctx, ui["nav_contact"]), P["h1"], P["lead"])}
 <section class="section"><div class="wrap form-wrap">
   <ul class="contact-list">
@@ -651,7 +669,7 @@ def build_contact(ctx):
       <p><a class="btn btn-dark btn-wa" data-evt="whatsapp_click" href="{esc(wa_url(ui["wa_general"]))}" target="_blank" rel="noopener">{WA_ICON}{esc(ui["whatsapp_long"])}</a></p>
       <p class="contact-value">{esc(wa_disp)}</p></li>
     <li><h3>{icon("mail")}{T(L, P["mail_h"])}</h3><p>{T(L, P["mail_p"])}</p><p class="contact-value">{esc(C.BIZ["email"])}</p></li>
-    <li><h3>{icon("pin")}{T(L, P["visit_h"])}</h3><p>{T(L, P["visit_p"])}</p></li>
+    <li><h3>{icon("pin")}{T(L, P["visit_h"])}</h3><p>{T(L, P["visit_p"])}</p></li>{company}
   </ul>
   <div id="formulier"><h2 style="margin-bottom:16px">{T(L, P["form_h"])}</h2>{lead_form(ctx, "contactformulier")}</div>
 </div></section>'''
