@@ -19,7 +19,7 @@ Verhuist de zaak of wijzigt het nummer: enkel `BIZ` aanpassen, bouwen, controler
 
 ## Nog vóór livegang
 - Toestemming van Shiny Cleaning en Thunder Racing voor de cases (`/realisaties/`)
-- In `api/aanvraag.php`: `$FROM` moet een bestaand mailadres op het domein zijn (Hostinger → E-mails)
+- Formulier mailt van en naar info@rozmarydigital.be (enige mailbox in Hostinger); lukt mailen niet, dan staat de aanvraag in `/data/aanvragen.jsonl`
 
 ## Deploy (zelfde werkwijze als Shiny Cleaning)
 1. Repo publiceren: GitHub Desktop → Add local repository → deze map → Publish (private mag).

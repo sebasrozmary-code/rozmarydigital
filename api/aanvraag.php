@@ -5,7 +5,7 @@
  * Antwoordt JSON bij fetch(), anders een redirect naar de bedankpagina.
  */
 $TO   = 'info@rozmarydigital.be';
-$FROM = 'website@rozmarydigital.be';   // bestaand adres op het domein gebruiken (SPF/DKIM)
+$FROM = 'info@rozmarydigital.be';      // moet een bestaande mailbox op het domein zijn (Hostinger), anders weigert mail()
 
 $wantsJson = isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false;
 function done($ok, $wantsJson, $thanks = '/bedankt/', $code = 200) {
@@ -60,11 +60,15 @@ $headers = [
     'Content-Type: text/plain; charset=UTF-8',
     'MIME-Version: 1.0',
 ];
-$sent = @mail($TO, '=?UTF-8?B?' . base64_encode($subject) . '?=', $body, implode("\r\n", $headers), '-f' . $FROM);
+$subj = '=?UTF-8?B?' . base64_encode($subject) . '?=';
+$sent = @mail($TO, $subj, $body, implode("\r\n", $headers), '-f' . $FROM);
+if (!$sent) $sent = @mail($TO, $subj, $body, implode("\r\n", $headers));   // tweede poging zonder envelope-afzender
 
 // Kopie bewaren (wordt na 12 maanden gewist volgens het privacybeleid)
 $dir = dirname(__DIR__) . '/data';
 if (!is_dir($dir)) @mkdir($dir, 0750, true);
-@file_put_contents($dir . '/aanvragen.jsonl', json_encode($data + ['tijd' => date('c'), 'mail' => $sent], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND | LOCK_EX);
+$stored = @file_put_contents($dir . '/aanvragen.jsonl', json_encode($data + ['tijd' => date('c'), 'mail' => $sent], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND | LOCK_EX) !== false;
 
-done((bool)$sent, $wantsJson, $thanks, $sent ? 200 : 500);
+// Geslaagd zodra de aanvraag gemaild óf bewaard is: geen enkele aanvraag gaat verloren.
+$ok = $sent || $stored;
+done($ok, $wantsJson, $thanks, $ok ? 200 : 500);
